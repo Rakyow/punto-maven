@@ -1,0 +1,8 @@
+com\rakyow\punto\Game.class
+com\rakyow\gameLauncher.class
+com\rakyow\database\CreationSQLiteTable.class
+com\rakyow\punto\Card.class
+com\rakyow\punto\Board.class
+com\rakyow\punto\Color.class
+com\rakyow\punto\Player.class
+com\rakyow\database\ConnexionSQLite.class
