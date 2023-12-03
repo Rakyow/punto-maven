@@ -1,0 +1,5 @@
+# Created at 2023-12-03T16:28:22.240
+Boot Manifest-JAR contains absolute paths in classpath 'D:\git\projet\punto-maven\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

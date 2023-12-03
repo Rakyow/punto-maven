@@ -16,43 +16,14 @@ public class Board {
     public Board() {
         this.cardsPlayed = new ArrayList<Card>();
         this.board = new Card[BOARD_SIZE][BOARD_SIZE];
+        // ON REMPLIT LE L'ArrayList carsPlayable de carte de valeur 0 et de couleur NONE
         this.cardsPlayable = new ArrayList<Card>();
-    }
-
-    public void printBoard() {
-        String  stringBoard = "------------------------------------------------------------------\n";
         for (int x = 0; x < BOARD_SIZE; x++) {
             for (int y = 0; y < BOARD_SIZE; y++){
-                if (board[y][x] == null) {
-                    stringBoard += "|   ";
-                } else {
-                    stringBoard += "| " + board[y][x].printCard();
-                }
-                stringBoard += " |";
+                this.cardsPlayable.add(new Card(0, Color.NONE, x, y));
             }
-            stringBoard += "\n";
-            stringBoard += "------------------------------------------------------------------\n";
         }
-        System.out.println(stringBoard);
-        
-    }
 
-    public void printBoardPlayable() {
-        // la meme chose que printBoard mais cela ajoute des X sur les cases non jouables
-        String  stringBoard = "------------------------------------------------------------------\n";
-        for (int x = 0; x < BOARD_SIZE; x++) {
-            for (int y = 0; y < BOARD_SIZE; y++){
-                if (board[y][x] == null && !this.isPlayable(x, y)) {
-                    stringBoard += "| X ";
-                } else {
-                    stringBoard += "| " + board[y][x].printCard();
-                }
-                stringBoard += " |";
-            }
-            stringBoard += "\n";
-            stringBoard += "------------------------------------------------------------------\n";
-        }
-        System.out.println(stringBoard);
     }
 
     public void printBoardWithTab() {
@@ -80,48 +51,42 @@ public class Board {
             }
             System.out.println("|");
         }
-
-        //affichage du tableau this.cardsPlayable
-        System.out.println("this.cardsPlayable :"+ this.cardsPlayable.size());
-        for (Card card : this.cardsPlayable) {
-            System.out.println(card.printCardWithCoord());
-        }
     }
 
     public boolean playCards(Card card, int x, int y) {
 
-        boolean ret = true;
-
-        if (this.board[x][y] == null) {
+        boolean ret = false;
+        if(isPlayable(x, y)) {
+            if (this.board[x][y] == null) {
             
-            this.board[x][y] = card;
-            this.addCardPlayed(card, x, y);
-            
-        } else if(this.board[x][y].getValue() < card.getValue()) {
+                this.board[x][y] = card;
+                this.addCardPlayed(card, x, y);
+                ret = true;
+                
+            } else if(this.board[x][y].getValue() < card.getValue()) {
 
-            this.board[x][y] = card;
-            this.addCardPlayed(card, x, y);
+                this.board[x][y] = card;
+                this.addCardPlayed(card, x, y);
+                ret = true;
 
+            } 
         } else {
             System.out.println("Vous ne pouvez pas jouer cette carte ici");
-            ret = false;
         }
         return ret;
 
     }
 
-    // en fonction des cartes jouées sur le plateau, on créer un tableau des cases jouables
+    // en fonction des cartes jouées sur le plateau, on créer un tableau des cases jouables autour des cartes jouées mais aussi sur les cases jouées
     public void createCardsPlayable() {
-        // on ajoute les cartes jouable en fonction des cartes jouées
-        // de sorte à ce que les cases jouables soient les cases adjacentes aux cartes jouées
-        // que se soit en haut, en bas, à gauche ou à droite, mais aussi en diagonale
+        
         this.cardsPlayable.clear();
+        this.cardsPlayable.add(this.cardsPlayed.get(0));
         for (Card card : this.cardsPlayed) {
             int x = card.getX();
             int y = card.getY();
             if (x > 0) {
                 this.addCardPlayable(new Card(0, Color.NONE, x - 1, y));
-
             }
             if (x < BOARD_SIZE - 1) {
                 this.addCardPlayable(new Card(0, Color.NONE, x + 1, y));
@@ -162,7 +127,7 @@ public class Board {
         // recherche dans le tableau si la carte n'y est pas déjà
         boolean found = false;
         for (Card cardPlayable : this.cardsPlayable) {
-            System.out.println("Coord : "+cardPlayable.getX()+" | "+card.getX()+" / "+cardPlayable.getY()+" | "+card.getY());
+            
             if (cardPlayable.getX() == card.getX() && cardPlayable.getY() == card.getY()) {
                 found = true;
             }
@@ -178,7 +143,6 @@ public class Board {
         card.setX(x);
         card.setY(y);
         this.cardsPlayed.add(card);
-        System.out.println("AAAAA"+card.getX()+"/"+card.getY());
     }
 
     public boolean isFull() {
@@ -193,6 +157,7 @@ public class Board {
         return ret;
     }
 
+
     public boolean isWin(int nbPlayers) {
         //si le nombre de joueurs est de 2 alors il suffit d'aligner 5 cartes
         //si le nombre de joueurs est de 3 ou 4 alors il suffit d'aligner 4 cartes
@@ -204,13 +169,56 @@ public class Board {
             nbCardsToWin = 4;
         }
 
-        // if (this.isWinInColumn(nbCardsToWin) || this.isWinInLine(nbCardsToWin) || this.isWinInDiagonal(nbCardsToWin)) {
-        //     win = true;
-        // }
-
-        if (this.isWinInLine(nbCardsToWin)) {
+        if (this.isWinInLine(nbCardsToWin) || this.isWinInColumn(nbCardsToWin) || this.isWinInDiagonal(nbCardsToWin)) {
             win = true;
             
+        }
+
+        System.out.println("win : " + win);
+
+        return win;
+    }
+
+    boolean isWinInDiagonal(int nbCardsToWin) {
+        boolean win = false;
+
+        for (Card card : this.cardsPlayed) {
+            int x = card.getX();
+            int y = card.getY();
+
+            // on vérifie si on peut gagner en diagonale
+            int nbCards = 1;
+            for (int i = 1; i < nbCardsToWin; i++) {
+                if (x + i < BOARD_SIZE && y + i < BOARD_SIZE && this.board[x + i][y + i] != null && this.board[x + i][y + i].getColor() == card.getColor()) {
+                    nbCards++;
+                }
+            }
+            if (nbCards == nbCardsToWin) {
+                win = true;
+                System.out.println("win en diagonale");
+            }
+        }
+
+        return win;
+    }
+    boolean isWinInColumn(int nbCardsToWin) {
+        boolean win = false;
+
+        for (Card card : this.cardsPlayed) {
+            int x = card.getX();
+            int y = card.getY();
+
+            // on vérifie si on peut gagner en colonne
+            int nbCards = 1;
+            for (int i = 1; i < nbCardsToWin; i++) {
+                if (y + i < BOARD_SIZE && this.board[x][y + i] != null && this.board[x][y + i].getColor() == card.getColor()) {
+                    nbCards++;
+                }
+            }
+            if (nbCards == nbCardsToWin) {
+                win = true;
+                System.out.println("win en colonne");
+            }
         }
 
         return win;
@@ -232,6 +240,7 @@ public class Board {
             }
             if (nbCards == nbCardsToWin) {
                 win = true;
+                System.out.println("win en ligne");
             }
         }
 

@@ -1,6 +1,6 @@
 package com.rakyow.punto;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Player {
 
@@ -8,7 +8,7 @@ public class Player {
     private String name;
 
     // cartes du joueur
-    private List<Card> cards;
+    private ArrayList<Card> cards;
 
     // score du joueur
     private int score;
@@ -18,7 +18,7 @@ public class Player {
 
     public Player(String name) {
         this.name = name;
-        this.cards = null; // ou new ArrayList<>() si vous voulez une liste vide par défaut
+        this.cards = new ArrayList<Card>();
         this.score = 0;
         this.round = 0;
     }
@@ -33,7 +33,9 @@ public class Player {
 
     public Card randomCard() {
         Card card = null;
+
         if (this.cards.size() > 0) {
+            
             int random = (int) (Math.random() * this.cards.size());
             card = this.cards.get(random);
             this.cards.remove(random);
@@ -41,17 +43,16 @@ public class Player {
         return card;
     }
 
-    public void setCards(List<Card> playerCards) {
-        this.cards = playerCards;
+    public void addCard(Card card) {
+        this.cards.add(card);
     }
-
 
 
     public String getName() {
         return this.name;
     }
 
-    public List<Card> getCards() {
+    public ArrayList<Card> getCards() {
         return this.cards;
     }
 
@@ -61,5 +62,11 @@ public class Player {
 
     public int getRound() {
         return this.round;
+    }
+
+    public void addRound() {
+        System.out.println(this.name + " a gagné la manche");
+        this.round++;
+        System.out.println(this.name + " a " + this.score + " points");
     }
 }
