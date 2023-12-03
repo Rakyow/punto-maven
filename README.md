@@ -11,7 +11,7 @@ Punto est un jeu de cartes en Java, implémenté en utilisant Maven comme systè
    - Vérifiez que Maven est installé en exécutant `mvn -version` dans votre terminal.
 
 2. **Clonage du dépôt :**
-   - Clonez ce dépôt en utilisant `git clone [lien-du-repo]`.
+   - Clonez ce dépôt en utilisant `git clone https://github.com/Rakyow/punto-maven.git`.
 
 3. **Création des bases :**
    - Pensez bien à lancer les serveurs MongoDB et MySQL
