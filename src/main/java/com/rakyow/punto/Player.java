@@ -93,8 +93,8 @@ public class Player {
      * This method is used to add a point to the player's score.
      */
     public void addRound() {
+        System.out.println("\n----------------------------------------\n");
         System.out.println(this.name + " a gagné la manche");
         this.round++;
-        System.out.println(this.name + " a " + this.score + " points");
     }
 }

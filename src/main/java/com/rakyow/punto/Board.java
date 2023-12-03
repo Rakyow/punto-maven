@@ -261,8 +261,6 @@ public class Board {
             
         }
 
-        System.out.println("win : " + win);
-
         return win;
     }
 
@@ -288,7 +286,6 @@ public class Board {
             }
             if (nbCards == nbCardsToWin) {
                 win = true;
-                System.out.println("win en diagonale");
             }
         }
 
@@ -316,7 +313,6 @@ public class Board {
             }
             if (nbCards == nbCardsToWin) {
                 win = true;
-                System.out.println("win en colonne");
             }
         }
 
@@ -344,7 +340,6 @@ public class Board {
             }
             if (nbCards == nbCardsToWin) {
                 win = true;
-                System.out.println("win en ligne");
             }
         }
 

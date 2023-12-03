@@ -23,10 +23,9 @@ public class ConnexionMySQL {
 
         try {
             connection = DriverManager.getConnection(url, user, password);
-            System.out.println("MySQL : Connexion établie !");
             createTables();
         } catch (SQLException e) {
-            System.out.println("MySQL : Connexion échoué !");
+            System.err.println("MySQL : Connexion échoué !");
             e.printStackTrace();
         }
     }
@@ -82,7 +81,6 @@ public class ConnexionMySQL {
             statement.executeUpdate(createRoundTable);
             statement.executeUpdate(createPlayTable);
 
-            System.out.println("MySQL : Tables créées avec succès !");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -95,7 +93,6 @@ public class ConnexionMySQL {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("MySQL : Connexion fermée !");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -113,10 +110,9 @@ public class ConnexionMySQL {
 
             String addGame = "INSERT INTO Game (name) VALUES ('" + name + "')";
             statement.executeUpdate(addGame);
-            System.out.println("MySQL : Game ajouté");
 
         } catch (SQLException e) {
-            System.out.println("MySQL : Erreur lors de l'ajout du jeu : " + e.getMessage());
+            System.err.println("MySQL : Erreur lors de l'ajout du jeu : " + e.getMessage());
         }
     }
 
@@ -139,36 +135,26 @@ public class ConnexionMySQL {
 
             if (resultSet.next()) {
                 int game_id = resultSet.getInt("id");
-                System.out.println("MySQL: Game id récupéré : " + game_id);
 
                 String selectRoundIdQuery = "SELECT id FROM Round WHERE game_id = " + game_id + " AND round_number = " + round_number;
                 resultSet = statement.executeQuery(selectRoundIdQuery);
 
                 if (resultSet.next()) {
                     int round_id = resultSet.getInt("id");
-                    System.out.println("MySQL: Round id récupéré : " + round_id);
 
                     String selectPlayerIdQuery = "SELECT id FROM Player WHERE name = '" + player + "'";
                     resultSet = statement.executeQuery(selectPlayerIdQuery);
 
                     if (resultSet.next()) {
                         int player_id = resultSet.getInt("id");
-                        System.out.println("MySQL: Player id récupéré : " + player_id);
 
                         String addPlayQuery = "INSERT INTO Play (round_id, player_id, color, score, coordX, coordY) VALUES (" + round_id + ", " + player_id + ", '" + color + "', " + score + ", " + coordX + ", " + coordY + ")";
                         statement.executeUpdate(addPlayQuery);
-                        System.out.println("MySQL: Play ajouté");
-                    } else {
-                        System.out.println("MySQL: Aucun joueur trouvé avec le nom : " + player);
-                    }
-                } else {
-                    System.out.println("MySQL: Aucun round trouvé avec le numéro : " + round_number);
-                }
-            } else {
-                System.out.println("MySQL: Aucun jeu trouvé avec le nom : " + game);
-            }
+                    } 
+                } 
+            } 
         } catch (SQLException e) {
-            System.out.println("MySQL: Erreur lors de l'ajout du play : " + e.getMessage());
+            System.err.println("MySQL: Erreur lors de l'ajout du play : " + e.getMessage());
         }
     }
 
@@ -183,9 +169,8 @@ public class ConnexionMySQL {
 
             String updateGameQuery = "UPDATE Game SET isWinnerGame = '" + winner + "' WHERE name = '" + game + "'";
             statement.executeUpdate(updateGameQuery);
-            System.out.println("MySQL: Game mis à jour");
         } catch (SQLException e) {
-            System.out.println("MySQL: Erreur lors de la mise à jour du game : " + e.getMessage());
+            System.err.println("MySQL: Erreur lors de la mise à jour du game : " + e.getMessage());
         }
     }
 
@@ -204,26 +189,19 @@ public class ConnexionMySQL {
 
             if (resultSet.next()) {
                 int game_id = resultSet.getInt("id");
-                System.out.println("MySQL: Game id récupéré : " + game_id);
 
                 String selectRoundIdQuery = "SELECT id FROM Round WHERE game_id = " + game_id + " AND round_number = " + round_number;
                 resultSet = statement.executeQuery(selectRoundIdQuery);
 
                 if (resultSet.next()) {
                     int round_id = resultSet.getInt("id");
-                    System.out.println("MySQL: Round id récupéré : " + round_id);
 
                     String updateRoundQuery = "UPDATE Round SET isWinnerRound = '" + winner + "' WHERE id = " + round_id;
                     statement.executeUpdate(updateRoundQuery);
-                    System.out.println("MySQL: Round mis à jour");
-                } else {
-                    System.out.println("MySQL: Aucun round trouvé avec le numéro : " + round_number);
-                }
-            } else {
-                System.out.println("MySQL: Aucun jeu trouvé avec le nom : " + game);
-            }
+                } 
+            } 
         } catch (SQLException e) {
-            System.out.println("MySQL: Erreur lors de la mise à jour du round : " + e.getMessage());
+            System.err.println("MySQL: Erreur lors de la mise à jour du round : " + e.getMessage());
         }
     }
     
@@ -239,15 +217,12 @@ public class ConnexionMySQL {
             String selectPlayerQuery = "SELECT * FROM Player WHERE name = '" + name + "'";
             ResultSet resultSet = statement.executeQuery(selectPlayerQuery);
 
-            if (resultSet.next()) {
-                System.out.println("MySQL : Le joueur existe déjà !");
-            } else {
+            if (!resultSet.next()) {
                 String addPlayerQuery = "INSERT INTO Player (name) VALUES ('" + name + "')";
                 statement.executeUpdate(addPlayerQuery);
-                System.out.println("MySQL : Player ajouté avec succès !");
-            }
+            } 
         } catch (SQLException e) {
-            System.out.println("MySQL : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("MySQL : Erreur lors de l'ajout du joueur : " + e.getMessage());
         }
     }
 
@@ -265,16 +240,12 @@ public class ConnexionMySQL {
     
             if (resultSet.next()) {
                 int game_id = resultSet.getInt("id");
-                System.out.println("SQLite: Game id récupéré : " + game_id);
     
                 String addRoundQuery = "INSERT INTO Round (game_id, round_number) VALUES (" + game_id + ", " + round_number + ")";
                 statement.executeUpdate(addRoundQuery);
-                System.out.println("SQLite: Round ajouté");
-            } else {
-                System.out.println("SQLite: Aucun jeu trouvé avec le nom : " + game);
-            }
+            } 
         } catch (SQLException e) {
-            System.out.println("SQLite: Erreur lors de l'ajout du round : " + e.getMessage());
+            System.err.println("SQLite: Erreur lors de l'ajout du round : " + e.getMessage());
         }
     }
 
@@ -296,7 +267,7 @@ public class ConnexionMySQL {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("MySQL : Erreur lors de la vérification du nom du jeu : " + e.getMessage());
+            System.err.println("MySQL : Erreur lors de la vérification du nom du jeu : " + e.getMessage());
             return false;
         }
     }

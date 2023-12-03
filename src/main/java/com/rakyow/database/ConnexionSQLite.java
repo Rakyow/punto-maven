@@ -20,10 +20,9 @@ public class ConnexionSQLite {
 
         try {
             this.connexion = DriverManager.getConnection(url);
-            System.out.println("SQLite : Connexion établie !");
             createTables();
         } catch (SQLException e) {
-            System.out.println("SQLite : Connexion échoué !");
+            System.err.println("SQLite : Connexion échoué !");
             e.printStackTrace();
         }
     }
@@ -73,7 +72,6 @@ public class ConnexionSQLite {
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "name TEXT UNIQUE)");
 
-            System.out.println("SQLite : Tables créées avec succès !");
             
         } catch (SQLException e) {
             e.printStackTrace();
@@ -87,7 +85,6 @@ public class ConnexionSQLite {
         try {
             if (connexion != null && !connexion.isClosed()) {
                 connexion.close();
-                System.out.println("SQLite : Connexion fermée !");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -104,7 +101,7 @@ public class ConnexionSQLite {
             Statement statement = connexion.createStatement();
             return statement.executeQuery("SELECT id FROM Game WHERE name = '" + name + "'").getInt("id") == 0;
         } catch (SQLException e) {
-            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
             return false;
         }
     }
@@ -121,11 +118,10 @@ public class ConnexionSQLite {
             Statement statement = connexion.createStatement();
 
             statement.executeUpdate("INSERT INTO Game (name) VALUES ('" + name + "')");
-            System.out.println("SQLite : Partie ajoutée");
 
             return name;
         } catch (SQLException e) {
-            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
             return null;
         }
 
@@ -139,13 +135,10 @@ public class ConnexionSQLite {
     public void addRound(String game, int round_number) {
         try {
             Statement statement = connexion.createStatement();
-            System.out.println("SQLite : game = " + game);
             int game_id = statement.executeQuery("SELECT id FROM Game WHERE name = '" + game + "'").getInt("id");
-            System.out.println("SQLite : game_id = " + game_id);
             statement.executeUpdate("INSERT INTO Round (game_id, round_number) VALUES ('" + game_id + "', '" + round_number + "')");
-            System.out.println("SQLite : Round ajouté avec succès !");
         } catch (SQLException e) {
-            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
         }
     }
 
@@ -158,14 +151,12 @@ public class ConnexionSQLite {
             Statement statement = connexion.createStatement();
             // check if player already exists
             if (statement.executeQuery("SELECT id FROM Player WHERE name = '" + name + "'").getInt("id") != 0) {
-                System.out.println("SQLite : Le joueur existe déjà !");
 
             } else {
                 statement.executeUpdate("INSERT INTO Player (name) VALUES ('" + name + "')");
-                System.out.println("SQLite : Joueur ajouté avec succès !");
             }
         } catch (SQLException e) {
-            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
         }
     }
 
@@ -188,7 +179,7 @@ public class ConnexionSQLite {
             int player_id = statement.executeQuery("SELECT id FROM Player WHERE name = '" + player + "'").getInt("id");
             statement.executeUpdate("INSERT INTO Play (round_id, player_id, score, color, coordX, coordY) VALUES ('" + round_id + "', '" + player_id + "', '" + score + "', '" + color + "', '" + coordX + "', '" + coordY + "')");
         } catch (SQLException e) {
-            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
         }
     }
 
@@ -204,7 +195,7 @@ public class ConnexionSQLite {
             int game_id = statement.executeQuery("SELECT id FROM Game WHERE name = '" + game + "'").getInt("id");
             statement.executeUpdate("UPDATE Game SET isWinnerGame = '" + winner + "' WHERE id = '" + game_id + "'");
         } catch (SQLException e) {
-            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
         }
     }
 
@@ -222,7 +213,7 @@ public class ConnexionSQLite {
             int round_id = statement.executeQuery("SELECT id FROM Round WHERE game_id = '" + game_id + "' AND round_number = '" + round_number + "'").getInt("id");
             statement.executeUpdate("UPDATE Round SET isWinnerRound = '" + winner + "' WHERE id = '" + round_id + "'");
         } catch (SQLException e) {
-            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            System.err.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
         }
     }
 

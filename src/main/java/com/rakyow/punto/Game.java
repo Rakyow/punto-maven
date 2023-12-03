@@ -174,6 +174,9 @@ public class Game {
             }
             round++;
         }
+        System.out.println("\n----------------------------------\n");
+        System.out.println("Felicitation a " + this.currentPlayer.getName()+ " qui a gagné la partie !");
+        System.out.println("\n----------------------------------\n");
         this.updateGame();
     }
 
@@ -226,14 +229,15 @@ public class Game {
      * This method is used to play a card.
      */
     public void play() {
-       
+       System.out.println("\n----------------------------------\n");
         System.out.println("Joueur " + currentPlayer.getName() + " a vous de jouer :");
         
         Card cardChoose = this.currentPlayer.randomCard();
 
         boolean played = false;
         while(!played) {
-            System.out.println("Voici la carte que vous avez pioche : " + cardChoose.printCard());          
+            System.out.println("Voici la carte que vous avez pioche : " + cardChoose.printCard());        
+            System.out.println("\n----------------------------------\n");  
             System.out.println("Entrez la ligne :");
             int posX = input();
             System.out.println("Entrez la colonne :");
@@ -276,12 +280,15 @@ public class Game {
      */
     public int maxRoundWin() {
         int maxRound = 0;
+        System.out.println("\n----------------------------------\n");
         for (Player player : players) {
+            
             System.out.println(player.getName() + " a gagné " + player.getRound() + " manches");
             if (player.getRound() > maxRound) {
                 maxRound = player.getRound();
             }
         }
+        System.out.println("\n----------------------------------\n");
 
         return maxRound;
     }
@@ -313,8 +320,18 @@ public class Game {
         String[] names = {"Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4"};
 
         if(nbPlayers == 0) {
-            System.out.println("Entrez le nombre de joueurs :");
-            nbPlayers = this.scanner.nextInt();
+            while (true) {
+                System.out.println("Veuillez entrer le nombre de joueurs (entre 2 et 4) :");
+                if (this.scanner.hasNextInt()) {
+                    nbPlayers = this.scanner.nextInt();
+                    if (nbPlayers > 1 && nbPlayers < 5) {
+                        break; 
+                    } 
+                } else {
+                    System.out.println("Veuillez entrer un entier valide :");
+                    this.scanner.next(); 
+                }
+            }
         }
 
         for (int i = 0; i < nbPlayers; i++) {
