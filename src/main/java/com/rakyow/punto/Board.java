@@ -7,7 +7,7 @@ public class Board {
     // tableau des cartes jouées
     private List<Card> cardsPlayed;
 
-    private List<Card> cardsPlayable;
+    private ArrayList<Card> cardsPlayable;
 
     private static final int BOARD_SIZE = 11;
 
@@ -34,9 +34,9 @@ public class Board {
             for (int y = 0; y < BOARD_SIZE; y++){
                 if (this.board[y][x] == null) {
                     if(this.isPlayable(y, x)) {
-                        stringBoard[y][x] = "O";
+                        stringBoard[y][x] = "O ";
                     } else {
-                        stringBoard[y][x] = "X";
+                        stringBoard[y][x] = "X ";
                     }
                 } else {
                     stringBoard[y][x] = board[y][x].printCard();
@@ -110,6 +110,55 @@ public class Board {
                 this.addCardPlayable(new Card(0, Color.NONE, x + 1, y - 1));
             }
         }
+
+        ArrayList<Card> filteredPlayableCards = new ArrayList<Card>(this.cardsPlayable);
+
+        int maxBottom = 5;
+        int maxTop = 5;
+        int maxLeft = 5;
+        int maxRight = 5;
+
+
+        for (Card cardPlayed : this.cardsPlayed) {
+
+            if (cardPlayed.getX() > maxBottom) {
+                maxBottom = cardPlayed.getX();
+            }
+
+            if (cardPlayed.getX() < maxTop) {
+                maxTop = cardPlayed.getX();
+            }
+
+            if (cardPlayed.getY() > maxRight) {
+                maxRight = cardPlayed.getY();
+            }
+
+            if (cardPlayed.getY() < maxLeft) {
+                maxLeft = cardPlayed.getY();
+            }
+        }
+        
+
+        int diffX = maxBottom - maxTop;
+        int diffY = maxRight - maxLeft;
+
+            if (diffX == 5 || diffX == -5) {
+                for (Card cardPlayable : this.cardsPlayable) {
+                    if (cardPlayable.getX() < maxTop || cardPlayable.getX() > maxBottom) {
+                        filteredPlayableCards.remove(cardPlayable);
+                    }
+                }
+            }
+
+            if (diffY == 5 || diffY == -5) {
+                for (Card cardPlayable : this.cardsPlayable) {
+                    if (cardPlayable.getY() > maxRight || cardPlayable.getY() < maxLeft) {
+                        filteredPlayableCards.remove(cardPlayable);
+                    }
+                }
+            }
+
+        this.cardsPlayable = filteredPlayableCards;
     }
 
     public boolean isPlayable(int x, int y) {
@@ -124,7 +173,7 @@ public class Board {
     }
 
     public void addCardPlayable(Card card) {
-        // recherche dans le tableau si la carte n'y est pas déjà
+
         boolean found = false;
         for (Card cardPlayable : this.cardsPlayable) {
             

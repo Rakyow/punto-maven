@@ -3,7 +3,6 @@ package com.rakyow.database;
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.bson.Document;
@@ -47,20 +46,42 @@ public class ConnexionMongoDB {
         mongoClient.close();
     }
 
-    public void addGame() {
+    public void addGame(String name) {
         try {
             MongoCollection<Document> collection = database.getCollection("Game");
-            String gameName = generateName();
-            Document game = new Document("name", gameName);
-            // on vérifie que le nom du jeu n'existe pas déjà
-            while(collection.find(game).first() != null) {
-                gameName = generateName();
-                game = new Document("name", gameName);
-            }
-            collection.insertOne(game);
+            Document gameObject = new Document("name", name);
+            collection.insertOne(gameObject);
             System.out.println("MongoDB : Game ajouté avec succès !");
         } catch (MongoException e) {
             System.out.println("MongoDB : Erreur lors de l'ajout du jeu : " + e.getMessage());
+        }
+    }
+
+    public void addPlay(String game, int round_number, String player, int score, String color, int coordX, int coordY) {
+        try {
+            MongoCollection<Document> collection = database.getCollection("Play");
+            Document play = new Document("game", game).append("round_number", round_number).append("player", player).append("score", score).append("color", color).append("coordX", coordX).append("coordY", coordY);
+            collection.insertOne(play);
+            System.out.println("MongoDB : Play ajouté avec succès !");
+        } catch (MongoException e) {
+            System.out.println("MongoDB : Erreur lors de l'ajout du play : " + e.getMessage());
+        }
+    }
+
+    public void addPlayer(String name) {
+        try {
+
+            MongoCollection<Document> collection = database.getCollection("Player");
+            if(collection.find(new Document("name", name)).first() != null) {
+                System.out.println("MongoDB : Le joueur existe déjà !");
+                return;
+            } else {
+                Document player = new Document("name", name);
+                collection.insertOne(player);
+                System.out.println("MongoDB : Player ajouté avec succès !");
+            }
+        } catch (MongoException e) {
+            System.out.println("MongoDB : Erreur lors de l'ajout du joueur : " + e.getMessage());
         }
     }
 
@@ -74,23 +95,41 @@ public class ConnexionMongoDB {
             System.out.println("MongoDB : Erreur lors de l'ajout du round : " + e.getMessage());
         }
     }
-
-    // example of name generation Game-A73B9
-    private String generateName() {
-        String name = "Game-";
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String numbers = "0123456789";
-
-        for (int i = 0; i < 8; i++) {
-            
-            int choice = (int) Math.floor(Math.random() * 2);
-            if (choice == 0) {
-                name += alphabet.charAt((int) Math.floor(Math.random() * alphabet.length()));
-            } else {
-                name += numbers.charAt((int) Math.floor(Math.random() * numbers.length()));
-            }
+    public void updateGame(String game, String winner) {
+        try {
+            MongoCollection<Document> collection = database.getCollection("Game");
+            Document gameToUpdate = collection.find(new Document("name", game)).first();
+            gameToUpdate.append("winner", winner);
+            collection.replaceOne(new Document("name", game), gameToUpdate);
+            System.out.println("MongoDB : Game mis à jour avec succès !");
+        } catch (MongoException e) {
+            System.out.println("MongoDB : Erreur lors de la mise à jour du jeu : " + e.getMessage());
         }
+    }
+    
+    public void updateRound(String game, int round_number, String winner) {
+        try {
+            MongoCollection<Document> collection = database.getCollection("Round");
+            Document roundToUpdate = collection.find(new Document("game", game).append("round_number", round_number)).first();
+            roundToUpdate.append("winner", winner);
+            collection.replaceOne(new Document("game", game).append("round_number", round_number), roundToUpdate);
+            System.out.println("MongoDB : Round mis à jour avec succès !");
+        } catch (MongoException e) {
+            System.out.println("MongoDB : Erreur lors de la mise à jour du round : " + e.getMessage());
+        }
+    }
 
-        return name;
+    public boolean isAvailableName(String name) {
+        try {
+            MongoCollection<Document> collection = database.getCollection("Game");
+            if(collection.find(new Document("name", name)).first() != null) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (MongoException e) {
+            System.out.println("MongoDB : Erreur lors de la vérification du nom : " + e.getMessage());
+            return false;
+        }
     }
 }

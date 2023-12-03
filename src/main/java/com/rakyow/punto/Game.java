@@ -32,25 +32,23 @@ public class Game {
     ConnexionMySQL mysqlConnexion;
     ConnexionMongoDB mongoConnexion;
 
-    public Game() {
+    public Game(Scanner sc) {
         createConnexion();
         this.cards = createCards();
-        this.scanner = new Scanner(System.in);
+        this.scanner = sc;
         this.createPlayers(0);
         this.currentPlayer = null;
         this.round = 1;
-        start();
     }
 
     // constructeur de la partie, avec comme paramètre le nombre de joueurs
-    public Game(int nbPlayers) {
+    public Game(int nbPlayers, Scanner sc) {
         createConnexion();
         this.cards = createCards();
-        this.scanner = new Scanner(System.in);
+        this.scanner = sc;
         this.createPlayers(nbPlayers);
         this.currentPlayer = null;
         this.round = 1;
-        start();
     }
 
     private void createConnexion() {
@@ -66,9 +64,52 @@ public class Game {
     }
 
     private void addGame() {
-        this.sqliteConnexion.addGame();
-        this.mongoConnexion.addGame();
-        this.mysqlConnexion.addGame();
+        this.gameName = generateName();
+        
+        while(!isAvailableName(this.gameName)) {
+            this.gameName = generateName();
+        }
+
+        this.sqliteConnexion.addGame(gameName);
+        this.mongoConnexion.addGame(gameName);
+        this.mysqlConnexion.addGame(gameName);
+    }
+
+    private boolean isAvailableName(String name) {
+        return this.sqliteConnexion.isAvailableName(name) && this.mongoConnexion.isAvailableName(name) && this.mysqlConnexion.isAvailableName(name);
+    }
+
+    private void addRound() {
+        this.sqliteConnexion.addRound(this.gameName, this.round);
+        this.mongoConnexion.addRound(this.gameName, this.round);
+        this.mysqlConnexion.addRound(this.gameName, this.round);
+    }
+
+    private void addPlayer(String name) {
+        this.sqliteConnexion.addPlayer(name);
+        this.mongoConnexion.addPlayer(name);
+        this.mysqlConnexion.addPlayer(name);
+    }
+
+    private void addPlay(String game, int score, String color, int coordX, int coordY) {
+        String playerName = this.currentPlayer.getName();
+        this.sqliteConnexion.addPlay(game, this.round, playerName, score, color, coordX, coordY);
+        this.mongoConnexion.addPlay(game, this.round, playerName, score, color, coordX, coordY);
+        this.mysqlConnexion.addPlay(game, this.round, playerName, score, color, coordX, coordY);
+    }
+
+    private void updateGame() {
+        String playerName = this.currentPlayer.getName();
+        this.sqliteConnexion.updateGame(this.gameName, playerName);
+        this.mongoConnexion.updateGame(this.gameName, playerName);
+        this.mysqlConnexion.updateGame(this.gameName, playerName);
+    }
+
+    private void updateRound() {
+        String playerName = this.currentPlayer.getName();
+        this.sqliteConnexion.updateRound(this.gameName, this.round, playerName);
+        this.mongoConnexion.updateRound(this.gameName, this.round, playerName);
+        this.mysqlConnexion.updateRound(this.gameName, this.round, playerName);
     }
 
     public void start() {
@@ -84,13 +125,12 @@ public class Game {
                     this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % this.players.size());
                 } else {
                     this.currentPlayer.addRound();
-                    this.sqliteConnexion.updateRound(this.gameName, this.round, this.currentPlayer.getName());
+                    this.updateRound();
                 }
             }
             round++;
         }
-        this.sqliteConnexion.updateGame(this.gameName, this.currentPlayer.getName());
-        closeConnexion();
+        this.updateGame();
     }
 
     private int isFinish() {
@@ -109,7 +149,7 @@ public class Game {
     public void startRound() {
 
         this.board = new Board();
-        this.sqliteConnexion.addRound(this.gameName, this.round);
+        this.addRound();
         startDistribution();
         Player randomPlayer = pickRandomPlayer();
         System.out.println("Round " + round);
@@ -125,9 +165,10 @@ public class Game {
         int y = 5;
         this.board.playCards(cardChoose, x, y);
         this.board.createCardsPlayable();
+        addPlay(this.gameName, cardChoose.getValue(), cardChoose.getColor().toString(), x, y);
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % this.players.size());
-        this.sqliteConnexion.addPlay(this.gameName, this.round, this.currentPlayer.getName(), cardChoose.getValue(), cardChoose.getColor().toString(), x, y);
-            }
+    }
+
     public void play() {
         // attend que le joueur rentre la case où il veut jouer
        
@@ -145,7 +186,7 @@ public class Game {
         
             played = this.board.playCards(cardChoose, posX, posY);
             if(played) {
-                this.sqliteConnexion.addPlay(this.gameName, this.round, this.currentPlayer.getName(), cardChoose.getValue(), cardChoose.getColor().toString(), posX, posY);
+                addPlay(this.gameName, cardChoose.getValue(), cardChoose.getColor().toString(), posX, posY);
             } 
         }
         this.board.createCardsPlayable();
@@ -157,7 +198,7 @@ public class Game {
         while (true) {
             if (this.scanner.hasNextInt()) {
                 pos = this.scanner.nextInt();
-                if (pos >= 0 && pos <= 9) {
+                if (pos >= 0 && pos < 11) {
                     break; 
                 } else {
                     System.out.println("Veuillez entrer un entier entre 0 et 9 :");
@@ -212,7 +253,7 @@ public class Game {
         // on crée le nombre de joueurs demandé
         for (int i = 0; i < nbPlayers; i++) {
             this.players.add(new Player(names[i]));
-            this.sqliteConnexion.addPlayer(names[i]);
+            addPlayer(names[i]);
         }
 
     }
@@ -283,5 +324,24 @@ public class Game {
     // retourne un joueur au hasard pour commencer la partie
     public Player pickRandomPlayer() {
         return players.get((int) (Math.random() * players.size()));
+    }
+
+
+    private String generateName() {
+        String name = "Game-";
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String numbers = "0123456789";
+
+        for (int i = 0; i < 8; i++) {
+            
+            int choice = (int) Math.floor(Math.random() * 2);
+            if (choice == 0) {
+                name += alphabet.charAt((int) Math.floor(Math.random() * alphabet.length()));
+            } else {
+                name += numbers.charAt((int) Math.floor(Math.random() * numbers.length()));
+            }
+        }
+
+        return name;
     }
 }

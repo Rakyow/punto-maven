@@ -40,7 +40,7 @@ public class ConnexionSQLite {
             // Création de la table Round
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Round ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "game_id TEXT,"
+                    + "game_id INTEGER,"
                     + "round_number INTEGER,"
                     + "isWinnerRound TEXT,"
                     + "FOREIGN KEY(game_id) REFERENCES Game(id),"
@@ -82,15 +82,20 @@ public class ConnexionSQLite {
         }
     }
 
-    public String addGame() {
+    public boolean isAvailableName(String name) {
+        try {
+            Statement statement = connexion.createStatement();
+            return statement.executeQuery("SELECT id FROM Game WHERE name = '" + name + "'").getInt("id") == 0;
+        } catch (SQLException e) {
+            System.out.println("SQLite : Erreur lors de l'ajout du joueur : " + e.getMessage());
+            return false;
+        }
+    }
+    public String addGame(String name) {
 
         try {
-            String name = generateName();
-            Statement statement = connexion.createStatement();
 
-            while (statement.executeQuery("SELECT id FROM Game WHERE name = '" + name + "'").getInt("id") != 0) {
-                name = generateName();
-            }
+            Statement statement = connexion.createStatement();
 
             statement.executeUpdate("INSERT INTO Game (name) VALUES ('" + name + "')");
             System.out.println("SQLite : Partie ajoutée");
@@ -106,8 +111,9 @@ public class ConnexionSQLite {
     public void addRound(String game, int round_number) {
         try {
             Statement statement = connexion.createStatement();
-
+            System.out.println("SQLite : game = " + game);
             int game_id = statement.executeQuery("SELECT id FROM Game WHERE name = '" + game + "'").getInt("id");
+            System.out.println("SQLite : game_id = " + game_id);
             statement.executeUpdate("INSERT INTO Round (game_id, round_number) VALUES ('" + game_id + "', '" + round_number + "')");
             System.out.println("SQLite : Round ajouté avec succès !");
         } catch (SQLException e) {
@@ -167,22 +173,4 @@ public class ConnexionSQLite {
         }
     }
 
-    // example of name generation Game-A73B9
-    private String generateName() {
-        String name = "Game-";
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String numbers = "0123456789";
-
-        for (int i = 0; i < 8; i++) {
-            
-            int choice = (int) Math.floor(Math.random() * 2);
-            if (choice == 0) {
-                name += alphabet.charAt((int) Math.floor(Math.random() * alphabet.length()));
-            } else {
-                name += numbers.charAt((int) Math.floor(Math.random() * numbers.length()));
-            }
-        }
-
-        return name;
-    }
 }

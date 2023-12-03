@@ -2,12 +2,18 @@ package com.rakyow;
 
 import com.rakyow.punto.Game;
 
-public class gameLauncher {
+import java.util.Scanner;
 
-    public static void main(String[] args) {
+public class GameLauncher {
 
-        Game game = new Game();
+    Scanner sc;
 
+    public GameLauncher(Scanner sc) {
+        this.sc = sc;
+    }
+
+    public void createGame() {
+        Game game = new Game(sc);
         game.start();
     }
 }
