@@ -5,9 +5,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * This class is used to connect to the database.
+ */
 public class ConnexionSQLite {
-    private Connection connexion;
 
+    private Connection connexion; // connection
+
+    /**
+     * This constructor is used to create a ConnexionSQLite.
+     */
     public ConnexionSQLite() {
         String url = "jdbc:sqlite:./db/punto.sqlite";
 
@@ -21,23 +28,28 @@ public class ConnexionSQLite {
         }
     }
 
+    /**
+     * This method is used to get the connection.
+     * @return connection
+     */
     public Connection getConnexion() {
         return this.connexion;
     }
 
+    /**
+     * This method is used to create the tables.
+     */
     public void createTables() {
 
         try {
             Statement statement = connexion.createStatement();
 
-            // Création de la table Game
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Game ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "name TEXT UNIQUE,"
                     + "isWinnerGame TEXT," 
                     + "FOREIGN KEY(isWinnerGame) REFERENCES Player(name))");
 
-            // Création de la table Round
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Round ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "game_id INTEGER,"
@@ -46,7 +58,6 @@ public class ConnexionSQLite {
                     + "FOREIGN KEY(game_id) REFERENCES Game(id),"
                     + "FOREIGN KEY(isWinnerRound) REFERENCES Player(name))");
 
-            // Création de la table Play
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Play ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "round_id INTEGER,"
@@ -58,8 +69,7 @@ public class ConnexionSQLite {
                     + "FOREIGN KEY(round_id) REFERENCES Round(id),"
                     + "FOREIGN KEY(player_id) REFERENCES Player(id))");
 
-            // Création de la table Player 
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS Player (" // le nom du joueur est unique
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS Player (" 
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "name TEXT UNIQUE)");
 
@@ -70,7 +80,9 @@ public class ConnexionSQLite {
         }
     }
 
-    // Méthode pour fermer la connexion à la base de données
+    /**
+     * This method is used to close the connection.
+     */
     public void closeConnection() {
         try {
             if (connexion != null && !connexion.isClosed()) {
@@ -82,6 +94,11 @@ public class ConnexionSQLite {
         }
     }
 
+    /**
+     * This method is used to check if the name is available.
+     * @param name name to check
+     * @return true if the name is available, false otherwise
+     */
     public boolean isAvailableName(String name) {
         try {
             Statement statement = connexion.createStatement();
@@ -91,6 +108,12 @@ public class ConnexionSQLite {
             return false;
         }
     }
+
+    /**
+     * This method is used to add a game.
+     * @param name game's name
+     * @return game's name
+     */
     public String addGame(String name) {
 
         try {
@@ -108,6 +131,11 @@ public class ConnexionSQLite {
 
     }
 
+    /**
+     * This method is used to add a round.
+     * @param game game's name
+     * @param round_number round's number
+     */
     public void addRound(String game, int round_number) {
         try {
             Statement statement = connexion.createStatement();
@@ -121,6 +149,10 @@ public class ConnexionSQLite {
         }
     }
 
+    /**
+     * This method is used to add a player.
+     * @param name player's name
+     */
     public void addPlayer(String name) {
         try {
             Statement statement = connexion.createStatement();
@@ -137,6 +169,16 @@ public class ConnexionSQLite {
         }
     }
 
+    /**
+     * This method is used to add a play.
+     * @param game game's name
+     * @param round_number round's number
+     * @param player player's name
+     * @param score card's score
+     * @param color card's color
+     * @param coordX card's x coordinate
+     * @param coordY card's y coordinate
+     */
     public void addPlay(String game, int round_number, String player, int score, String color, int coordX, int coordY) {
         try {
             Statement statement = connexion.createStatement();
@@ -150,6 +192,11 @@ public class ConnexionSQLite {
         }
     }
 
+    /**
+     * This method is used to update the game's winner.
+     * @param game game's name
+     * @param winner game's winner
+     */
     public void updateGame(String game, String winner) {
         try {
             Statement statement = connexion.createStatement();
@@ -161,6 +208,12 @@ public class ConnexionSQLite {
         }
     }
 
+    /**
+     * This method is used to update the round's winner.
+     * @param game game's name
+     * @param round_number round's number
+     * @param winner round's winner
+     */
     public void updateRound(String game, int round_number, String winner) {
         try {
             Statement statement = connexion.createStatement();

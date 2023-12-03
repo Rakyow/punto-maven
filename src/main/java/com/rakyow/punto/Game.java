@@ -7,31 +7,33 @@ import com.rakyow.database.ConnexionMongoDB;
 import com.rakyow.database.ConnexionSQLite;
 import com.rakyow.database.ConnexionMySQL;
 
+/**
+ * This class is used to represent a game.
+ */
 public class Game {
 
-    private String gameName = "Punto";
+    private String gameName = "Punto"; // game's name
 
-    // Le tableau de jeu
-    private Board board;
+    private Board board; // game's board
 
-    // joueurs de la partie
-    private List<Player> players;
+    private List<Player> players; // game's players
 
-    // cartes du jeu
-    private ArrayList<Card> cards;
+    private ArrayList<Card> cards; // game's cards
 
-    // joueur qui doit jouer
-    private Player currentPlayer;
+    private Player currentPlayer; // current player
 
-    // numéro du round
-    private int round;
+    private int round; // current round
 
-    private Scanner scanner;
+    private Scanner scanner; // Scanner used to get the user input.
 
-    ConnexionSQLite sqliteConnexion;
-    ConnexionMySQL mysqlConnexion;
-    ConnexionMongoDB mongoConnexion;
+    ConnexionSQLite sqliteConnexion; // connexion to SQLite database
+    ConnexionMySQL mysqlConnexion; // connexion to MySQL database
+    ConnexionMongoDB mongoConnexion; // connexion to MongoDB database
 
+    /**
+     * This constructor is used to create a game.
+     * @param sc Scanner used to get the user input.
+     */
     public Game(Scanner sc) {
         createConnexion();
         this.cards = createCards();
@@ -41,7 +43,11 @@ public class Game {
         this.round = 1;
     }
 
-    // constructeur de la partie, avec comme paramètre le nombre de joueurs
+    /**
+     * This constructor is used to create a game.
+     * @param nbPlayers number of players
+     * @param sc Scanner used to get the user input.
+     */
     public Game(int nbPlayers, Scanner sc) {
         createConnexion();
         this.cards = createCards();
@@ -51,18 +57,27 @@ public class Game {
         this.round = 1;
     }
 
+    /**
+     * This method is used to create all the connexions to the databases.
+     */
     private void createConnexion() {
         this.sqliteConnexion = new ConnexionSQLite();
         this.mongoConnexion = new ConnexionMongoDB();
         this.mysqlConnexion = new ConnexionMySQL();
     }
 
+    /**
+     * This method is used to close all the connexions to the databases.
+     */
     private void closeConnexion() {
         this.sqliteConnexion.closeConnection();
         this.mongoConnexion.closeConnection();
         this.mysqlConnexion.closeConnection();
     }
 
+    /**
+     * This method is used to add a game to the databases.
+     */
     private void addGame() {
         this.gameName = generateName();
         
@@ -75,22 +90,42 @@ public class Game {
         this.mysqlConnexion.addGame(gameName);
     }
 
+    /**
+     * This method is used to check if the name of the game is available.
+     * @param name name of the game
+     * @return true if the name is available, false otherwise
+     */
     private boolean isAvailableName(String name) {
         return this.sqliteConnexion.isAvailableName(name) && this.mongoConnexion.isAvailableName(name) && this.mysqlConnexion.isAvailableName(name);
     }
 
+    /**
+     * This method is used to add a round to the databases.
+     */
     private void addRound() {
         this.sqliteConnexion.addRound(this.gameName, this.round);
         this.mongoConnexion.addRound(this.gameName, this.round);
         this.mysqlConnexion.addRound(this.gameName, this.round);
     }
 
+    /**
+     * This method is used to add a player to the databases.
+     * @param name name of the player
+     */
     private void addPlayer(String name) {
         this.sqliteConnexion.addPlayer(name);
         this.mongoConnexion.addPlayer(name);
         this.mysqlConnexion.addPlayer(name);
     }
 
+    /**
+     * This method is used to add a play to the databases.
+     * @param game name of the game
+     * @param score score of the play
+     * @param color color of the play
+     * @param coordX x coordinate of the play
+     * @param coordY y coordinate of the play
+     */
     private void addPlay(String game, int score, String color, int coordX, int coordY) {
         String playerName = this.currentPlayer.getName();
         this.sqliteConnexion.addPlay(game, this.round, playerName, score, color, coordX, coordY);
@@ -98,13 +133,19 @@ public class Game {
         this.mysqlConnexion.addPlay(game, this.round, playerName, score, color, coordX, coordY);
     }
 
+    /**
+     * This method is used to update the game in the databases.
+     */
     private void updateGame() {
         String playerName = this.currentPlayer.getName();
         this.sqliteConnexion.updateGame(this.gameName, playerName);
         this.mongoConnexion.updateGame(this.gameName, playerName);
         this.mysqlConnexion.updateGame(this.gameName, playerName);
     }
-
+    
+    /**
+     * This method is used to update the round in the databases.
+     */
     private void updateRound() {
         String playerName = this.currentPlayer.getName();
         this.sqliteConnexion.updateRound(this.gameName, this.round, playerName);
@@ -112,6 +153,9 @@ public class Game {
         this.mysqlConnexion.updateRound(this.gameName, this.round, playerName);
     }
 
+    /**
+     * This method is used to start the game.
+     */
     public void start() {
         addGame();
         while (maxRoundWin() < 2) {
@@ -133,6 +177,10 @@ public class Game {
         this.updateGame();
     }
 
+    /**
+     * This method is used to check if the game is finished.
+     * @return 0 if a player has won, 1 if the board is full, 2 otherwise
+     */
     private int isFinish() {
         int type = -1;
         if (this.currentPlayer.getCards().size() == 0) {
@@ -146,6 +194,9 @@ public class Game {
         return type;
     }
 
+    /**
+     * This method is used to start a round.
+     */
     public void startRound() {
 
         this.board = new Board();
@@ -158,7 +209,9 @@ public class Game {
         firstPlay();
     }
 
-    // au début d'une manche le joueur doit forcément jouer sur la case du milieu
+    /**
+     * This method is used to start the first play of the round.
+     */
     private void firstPlay() {
         Card cardChoose = this.currentPlayer.randomCard();
         int x = 5;
@@ -169,8 +222,10 @@ public class Game {
         this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % this.players.size());
     }
 
+    /**
+     * This method is used to play a card.
+     */
     public void play() {
-        // attend que le joueur rentre la case où il veut jouer
        
         System.out.println("Joueur " + currentPlayer.getName() + " a vous de jouer :");
         
@@ -192,6 +247,10 @@ public class Game {
         this.board.createCardsPlayable();
     }
 
+    /**
+     * This method is used to get the user input.
+     * @return user input
+     */
     private int input() {
         int pos = -1;
 
@@ -211,6 +270,10 @@ public class Game {
         return pos;
     }
 
+    /**
+     * This method is used to get the game's name.
+     * @return game's name
+     */
     public int maxRoundWin() {
         int maxRound = 0;
         for (Player player : players) {
@@ -223,13 +286,14 @@ public class Game {
         return maxRound;
     }
 
-    // créer les cartes du jeu de punto
+    /**
+     * This method is used to create the cards.
+     * @return list of cards
+     */
     public ArrayList<Card> createCards() {
         ArrayList<Card> cards = new ArrayList<>();
 
         Color[] colors = {Color.VERT, Color.ROUGE, Color.BLEU, Color.ORANGE};
-
-        // une carte possède une couleur et une valeur et il y a toujours deux cartes identiques
 
         for (Color color : colors) {
             for (int i = 1; i < 10; i++) {
@@ -240,17 +304,19 @@ public class Game {
         return cards;
     }
 
+    /**
+     * This method is used to create the players.
+     * @param nbPlayers number of players
+     */
     public void createPlayers(int nbPlayers) {
         this.players = new ArrayList<>();
         String[] names = {"Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4"};
 
-        // on demande le nombre de joueurs
         if(nbPlayers == 0) {
             System.out.println("Entrez le nombre de joueurs :");
             nbPlayers = this.scanner.nextInt();
         }
-        
-        // on crée le nombre de joueurs demandé
+
         for (int i = 0; i < nbPlayers; i++) {
             this.players.add(new Player(names[i]));
             addPlayer(names[i]);
@@ -258,7 +324,9 @@ public class Game {
 
     }
 
-    // distribution des cartes
+    /**
+     * This method is used to start the distribution.
+     */
     public void startDistribution() {
         int nbPlayers = players.size();
         if (nbPlayers == 2) {
@@ -271,8 +339,11 @@ public class Game {
         removeCardForWinningRound();
     }
 
+    /**
+     * This method is used to remove cards for the winning round.
+     */
     private void removeCardForWinningRound() {
-        // on retire une carte au hasard pour chaque manche gagné par le joueur
+        
         for (Player player : players) {
             for (int i = 0; i < player.getRound(); i++) {
                 player.getCards().remove((int) (Math.random() * player.getCards().size()));
@@ -280,7 +351,9 @@ public class Game {
         }
     }
 
-    // distribue les cartes à deux joueurs
+    /**
+     * This method is used to distribute the cards to two players.
+     */
     public void distributeCardsTwoPlayers() {
         
         for (int i = 0; i < 36; i++) {
@@ -290,7 +363,9 @@ public class Game {
 
     }
 
-    // distribue les cartes à trois joueurs
+    /**
+     * This method is used to distribute the cards to three players.
+     */
     public void distributeCardsThreePlayers() {
         for (int i = 0; i < 18; i++) {
             players.get(0).addCard(cards.get(i));
@@ -299,7 +374,9 @@ public class Game {
         }
     }
 
-    // distribue les cartes à quatre joueurs
+    /**
+     * This method is used to distribute the cards to four players.
+     */
     public void distributeCardsFourPlayers() {
         for (int i = 0; i < 18; i++) {
             players.get(0).addCard(cards.get(i));
@@ -309,7 +386,10 @@ public class Game {
         }
     }
 
-    // retourne deux couleurs au hasard
+    /**
+     * This method is used to pick two random colors.
+     * @return two random colors
+     */
     public Color[] pickRandomColors() {
         Color[] colors = {Color.VERT, Color.ROUGE, Color.BLEU, Color.ORANGE};
         Color[] randomColors = new Color[2];
@@ -321,12 +401,18 @@ public class Game {
         return randomColors;
     }
 
-    // retourne un joueur au hasard pour commencer la partie
+    /**
+     * This method is used to pick a random player.
+     * @return random player
+     */
     public Player pickRandomPlayer() {
         return players.get((int) (Math.random() * players.size()));
     }
 
-
+    /**
+     * This method is used to generate a random name for the game.
+     * @return random name for the game
+     */
     private String generateName() {
         String name = "Game-";
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

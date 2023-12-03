@@ -7,10 +7,18 @@ import java.util.ArrayList;
 
 import org.bson.Document;
 
+/**
+ * This class is used to connect to MongoDB.
+ */
 public class ConnexionMongoDB {
-    private MongoClient mongoClient;
-    private MongoDatabase database;
 
+    private MongoClient mongoClient; // MongoDB client
+
+    private MongoDatabase database; // MongoDB database
+
+    /**
+     * This constructor is used to create a ConnexionMongoDB.
+     */
     public ConnexionMongoDB() {
         String connectionString = "mongodb://localhost:27017"; // Remplacez par votre URL de connexion
         String databaseName = "punto"; // Remplacez par le nom de votre base de données
@@ -26,6 +34,9 @@ public class ConnexionMongoDB {
         }
     }
 
+    /**
+     * This method is used to create the collections.
+     */
     private void createCollections() {
         createCollection("Game");
         createCollection("Round");
@@ -33,6 +44,10 @@ public class ConnexionMongoDB {
         createCollection("Player");
     }
 
+    /**
+     * This method is used to create a collection.
+     * @param collectionName collection's name
+     */
     private void createCollection(String collectionName) {
         if (!database.listCollectionNames().into(new ArrayList<>()).contains(collectionName)) {
             database.createCollection(collectionName);
@@ -42,10 +57,17 @@ public class ConnexionMongoDB {
         }
     }
 
+    /**
+     * This method is used to close the connection.
+     */
     public void closeConnection() {
         mongoClient.close();
     }
 
+    /**
+     * This method is used to add a game.
+     * @param name game's name
+     */
     public void addGame(String name) {
         try {
             MongoCollection<Document> collection = database.getCollection("Game");
@@ -57,6 +79,16 @@ public class ConnexionMongoDB {
         }
     }
 
+    /**
+     * This method is used to add a play.
+     * @param game game's name
+     * @param round_number round's number
+     * @param player player's name
+     * @param score player's score
+     * @param color card's color
+     * @param coordX card's x coordinate
+     * @param coordY card's y coordinate
+     */
     public void addPlay(String game, int round_number, String player, int score, String color, int coordX, int coordY) {
         try {
             MongoCollection<Document> collection = database.getCollection("Play");
@@ -68,6 +100,10 @@ public class ConnexionMongoDB {
         }
     }
 
+    /**
+     * This method is used to add a player.
+     * @param name player's name
+     */
     public void addPlayer(String name) {
         try {
 
@@ -85,6 +121,11 @@ public class ConnexionMongoDB {
         }
     }
 
+    /**
+     * This method is used to add a round.
+     * @param game game's name
+     * @param round_number round's number
+     */
     public void addRound(String game, int round_number) {
         try {
             MongoCollection<Document> collection = database.getCollection("Round");
@@ -95,6 +136,12 @@ public class ConnexionMongoDB {
             System.out.println("MongoDB : Erreur lors de l'ajout du round : " + e.getMessage());
         }
     }
+
+    /**
+     * This method is used to update the game's winner.
+     * @param game game's name
+     * @param winner game's winner
+     */
     public void updateGame(String game, String winner) {
         try {
             MongoCollection<Document> collection = database.getCollection("Game");
@@ -107,6 +154,12 @@ public class ConnexionMongoDB {
         }
     }
     
+    /**
+     * This method is used to update a round's winner.
+     * @param game game's name
+     * @param round_number round's number
+     * @param winner round's winner
+     */
     public void updateRound(String game, int round_number, String winner) {
         try {
             MongoCollection<Document> collection = database.getCollection("Round");
@@ -119,6 +172,11 @@ public class ConnexionMongoDB {
         }
     }
 
+    /**
+     * This method is used to get the game's name.
+     * @param name game's name
+     * @return the game's name
+     */
     public boolean isAvailableName(String name) {
         try {
             MongoCollection<Document> collection = database.getCollection("Game");

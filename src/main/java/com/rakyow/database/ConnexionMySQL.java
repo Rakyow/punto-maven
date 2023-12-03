@@ -6,9 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * This class is used to connect to the MySQL database.
+ */
 public class ConnexionMySQL {
-    private Connection connection;
 
+    private Connection connection; // connection to the MySQL database
+
+    /**
+     * This constructor is used to connect to the MySQL database.
+     */
     public ConnexionMySQL() {
         String url = "jdbc:mysql://localhost:3306/punto";
         String user = "rakyow";
@@ -24,24 +31,29 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is used to get the connection to the MySQL database.
+     * @return the connection to the MySQL database
+     */
     public Connection getConnection() {
         return connection;
     }
 
+    /**
+     * This method is used to create the tables.
+     */
     public void createTables() {
         
         try {
 
             Statement statement = connection.createStatement();
 
-            // Création de la table Game
             String createGameTable = "CREATE TABLE IF NOT EXISTS Game ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "name VARCHAR(50) UNIQUE,"
                     + "isWinnerGame VARCHAR(50),"
                     + "FOREIGN KEY(isWinnerGame) REFERENCES Player(name))";
 
-            // Création de la table Round
             String createRoundTable = "CREATE TABLE IF NOT EXISTS Round ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "game_id INT,"
@@ -50,7 +62,6 @@ public class ConnexionMySQL {
                     + "FOREIGN KEY(game_id) REFERENCES Game(id),"
                     + "FOREIGN KEY(isWinnerRound) REFERENCES Player(name))";
 
-            // Création de la table Play
             String createPlayTable = "CREATE TABLE IF NOT EXISTS Play ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "round_id INT,"
@@ -62,13 +73,10 @@ public class ConnexionMySQL {
                     + "FOREIGN KEY(round_id) REFERENCES Round(id),"
                     + "FOREIGN KEY(player_id) REFERENCES Player(id))";
 
-            // Création de la table Player 
             String createPlayerTable = "CREATE TABLE IF NOT EXISTS Player ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "name VARCHAR(50) UNIQUE)";
 
-            // Exécution des requêtes SQL de création des tables dans la base de données
-            // on donne un retour à l'utilisateur
             statement.executeUpdate(createPlayerTable);
             statement.executeUpdate(createGameTable);
             statement.executeUpdate(createRoundTable);
@@ -80,6 +88,9 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is used to close the connection.
+     */
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -91,6 +102,10 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is used to add a game.
+     * @param name game's name
+     */
     public void addGame(String name) {
 
         try {
@@ -105,6 +120,16 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is used to add a play.
+     * @param game game's name
+     * @param round_number round's number
+     * @param player player's name
+     * @param score player's score
+     * @param color card's color
+     * @param coordX card's x coordinate
+     * @param coordY card's y coordinate
+     */
     public void addPlay(String game, int round_number, String player, int score, String color, int coordX, int coordY) {
         try {
             Statement statement = connection.createStatement();
@@ -147,6 +172,11 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is used to update the game.
+     * @param game game's name
+     * @param winner game's winner
+     */
     public void updateGame(String game, String winner) {
         try {
             Statement statement = connection.createStatement();
@@ -159,6 +189,12 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is used to update the round.
+     * @param game game's name
+     * @param round_number round's number
+     * @param winner round's winner
+     */
     public void updateRound(String game, int round_number, String winner) {
         try {
             Statement statement = connection.createStatement();
@@ -190,7 +226,11 @@ public class ConnexionMySQL {
             System.out.println("MySQL: Erreur lors de la mise à jour du round : " + e.getMessage());
         }
     }
-
+    
+    /**
+     * This method is used to add a player.
+     * @param name player's name
+     */
     public void addPlayer(String name) {
         try {
 
@@ -211,6 +251,11 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is used to add a round.
+     * @param game game's name
+     * @param round_number round's number
+     */
     public void addRound(String game, int round_number) {
         try {
             Statement statement = connection.createStatement();
@@ -233,6 +278,11 @@ public class ConnexionMySQL {
         }
     }
 
+    /**
+     * This method is to check if the game's name is available.
+     * @param name game's name
+     * @return true if the game's name is available, false otherwise
+     */
     public boolean isAvailableName(String name) {
         try {
             Statement statement = connection.createStatement();

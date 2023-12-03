@@ -2,17 +2,23 @@ package com.rakyow.punto;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used to represent the board of the game.
+ */
 public class Board {
 
-    // tableau des cartes jouées
-    private List<Card> cardsPlayed;
+  
+    private List<Card> cardsPlayed; // List of cards played on the board.
 
-    private ArrayList<Card> cardsPlayable;
+    private ArrayList<Card> cardsPlayable; // List of cards playable on the board. 
 
-    private static final int BOARD_SIZE = 11;
+    private static final int BOARD_SIZE = 11; // Size of the board.
 
-    private Card[][] board;
+    private Card[][] board; // Array of cards representing the board.
 
+    /**
+     * This constructor is used to create a Board.
+     */
     public Board() {
         this.cardsPlayed = new ArrayList<Card>();
         this.board = new Card[BOARD_SIZE][BOARD_SIZE];
@@ -26,6 +32,9 @@ public class Board {
 
     }
 
+    /**
+     * This method is used to print the board.
+     */
     public void printBoardWithTab() {
         
         String[][] stringBoard = new String[BOARD_SIZE][BOARD_SIZE];
@@ -53,6 +62,9 @@ public class Board {
         }
     }
 
+    /**
+     * This method is used to print the board.
+     */
     public boolean playCards(Card card, int x, int y) {
 
         boolean ret = false;
@@ -77,7 +89,9 @@ public class Board {
 
     }
 
-    // en fonction des cartes jouées sur le plateau, on créer un tableau des cases jouables autour des cartes jouées mais aussi sur les cases jouées
+    /**
+     * This method is used to create the cards playable on the board.
+     */
     public void createCardsPlayable() {
         
         this.cardsPlayable.clear();
@@ -161,6 +175,12 @@ public class Board {
         this.cardsPlayable = filteredPlayableCards;
     }
 
+    /**
+     * This method is used to check if a card is playable on the board.
+     * @param x The x coordinate of the card.
+     * @param y The y coordinate of the card.
+     * @return true if the card is playable, false otherwise.
+     */
     public boolean isPlayable(int x, int y) {
         boolean ret = false;
 
@@ -172,6 +192,10 @@ public class Board {
         return ret;
     }
 
+    /**
+     * This method is used to add a card to the list of cards playable on the board.
+     * @param card The card to add.
+     */
     public void addCardPlayable(Card card) {
 
         boolean found = false;
@@ -188,12 +212,22 @@ public class Board {
 
     }
 
+    /**
+     * This method is used to add a card to the list of cards played on the board.
+     * @param card The card to add.
+     * @param x The x coordinate of the card.
+     * @param y The y coordinate of the card.
+     */
     public void addCardPlayed(Card card, int x, int y) {
         card.setX(x);
         card.setY(y);
         this.cardsPlayed.add(card);
     }
 
+    /**
+     * This method is used to check if the board is full.
+     * @return true if the board is full, false otherwise.
+     */
     public boolean isFull() {
         boolean ret = true;
         for (int x = 0; x < BOARD_SIZE; x++) {
@@ -207,9 +241,13 @@ public class Board {
     }
 
 
+    /**
+     * This method is used to check if a player has won
+     * @param nbPlayers The number of players.
+     * @return true if a player has won, false otherwise.
+     */
     public boolean isWin(int nbPlayers) {
-        //si le nombre de joueurs est de 2 alors il suffit d'aligner 5 cartes
-        //si le nombre de joueurs est de 3 ou 4 alors il suffit d'aligner 4 cartes
+
         boolean win = false;
 
         int nbCardsToWin = 5;
@@ -228,6 +266,12 @@ public class Board {
         return win;
     }
 
+    
+    /**
+     * This method is used to check if a player has won in diagonal.
+     * @param nbCardsToWin The number of cards to win.
+     * @return true if the player has won in diagonal, false otherwise.
+     */
     boolean isWinInDiagonal(int nbCardsToWin) {
         boolean win = false;
 
@@ -250,6 +294,12 @@ public class Board {
 
         return win;
     }
+
+    /**
+     * This method is used to check if a player has won in column.
+     * @param nbCardsToWin The number of cards to win.
+     * @return true if the player has won in column, false otherwise.
+     */
     boolean isWinInColumn(int nbCardsToWin) {
         boolean win = false;
 
@@ -273,6 +323,11 @@ public class Board {
         return win;
     }
 
+    /**
+     * This method is used to check if a player has won in line.
+     * @param nbCardsToWin The number of cards to win.
+     * @return true if the player has won in line, false otherwise.
+     */
     boolean isWinInLine(int nbCardsToWin) {
         boolean win = false;
 
