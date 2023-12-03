@@ -167,10 +167,15 @@ public class Game {
                 win = isFinish();
                 if(win == -1) {
                     this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % this.players.size());
+                } else if(win == 0 || win == 2) {
+                    System.out.println("\n----------------------------------\n");
+                    System.out.println("Egalité !");
+                    System.out.println("\n----------------------------------\n");
                 } else {
                     this.currentPlayer.addRound();
-                    this.updateRound();
+                    this.updateRound();   
                 }
+                
             }
             round++;
         }
