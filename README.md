@@ -22,7 +22,7 @@ Punto est un jeu de cartes en Java, implémenté en utilisant Maven comme systè
    - Exécutez `mvn clean install` pour compiler le projet.
 
 5. **Lancement du jeu :**
-   - Exécutez `java -jar target/punto-1.0.jar` pour démarrer le jeu.
+   - Exécutez `mvn exec:java` pour démarrer le jeu.
 
 ## Structure du projet
 
