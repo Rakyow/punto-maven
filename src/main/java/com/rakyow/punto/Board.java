@@ -271,26 +271,40 @@ public class Board {
      * @return true if the player has won in diagonal, false otherwise.
      */
     boolean isWinInDiagonal(int nbCardsToWin) {
-        boolean win = false;
-
+        return isWinInDiagonalDirection(nbCardsToWin, 1) || isWinInDiagonalDirection(nbCardsToWin, -1);
+    }
+    
+    /**
+     * This method is used to check if a player has won in diagonal.
+     * @param nbCardsToWin The number of cards to win.
+     * @param direction The direction of the diagonal.
+     * @return true if the player has won in diagonal, false otherwise.
+     */
+    private boolean isWinInDiagonalDirection(int nbCardsToWin, int direction) {
         for (Card card : this.cardsPlayed) {
             int x = card.getX();
             int y = card.getY();
-
-            // on vérifie si on peut gagner en diagonale
+    
             int nbCards = 1;
             for (int i = 1; i < nbCardsToWin; i++) {
-                if (x + i < BOARD_SIZE && y + i < BOARD_SIZE && this.board[x + i][y + i] != null && this.board[x + i][y + i].getColor() == card.getColor()) {
+                int newX = x + i * direction;
+                int newY = y + i;
+                if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE &&
+                    this.board[newX][newY] != null &&
+                    this.board[newX][newY].getColor() == card.getColor()) {
                     nbCards++;
+                } else {
+                    break;
                 }
             }
-            if (nbCards == nbCardsToWin) {
-                win = true;
+            if (nbCards >= nbCardsToWin) {
+                return true;
             }
         }
-
-        return win;
+    
+        return false;
     }
+    
 
     /**
      * This method is used to check if a player has won in column.
