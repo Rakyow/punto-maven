@@ -229,14 +229,35 @@ public class Board {
      * @return true if the board is full, false otherwise.
      */
     public boolean isFull() {
-        boolean ret = true;
-        for (int x = 0; x < BOARD_SIZE; x++) {
-            for (int y = 0; y < BOARD_SIZE; y++){
-                if (board[y][x] == null) {
-                    ret = false;
+        boolean ret = false;
+        
+        int nbLigne = 0;
+
+        int x = 0;
+        int y = 0;
+
+        while (x < BOARD_SIZE && !ret) {
+            boolean ligne = false;
+            int nbCards = 0;
+            while (y < BOARD_SIZE && !ligne) {
+                if (this.board[x][y] == null) {
+                    nbCards = 0;
+                } else {
+                    nbCards++;
                 }
+                if (nbCards == 6) {
+                    ligne = true;
+                    nbLigne++;
+                }
+                y++;
             }
+            if (nbLigne == 6) {
+                ret = true;
+            }
+            y = 0;
+            x++;
         }
+
         return ret;
     }
 

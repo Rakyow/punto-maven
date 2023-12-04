@@ -167,10 +167,35 @@ public class Game {
                 win = isFinish();
                 if(win == -1) {
                     this.currentPlayer = this.players.get((this.players.indexOf(this.currentPlayer) + 1) % this.players.size());
-                } else if(win == 0 || win == 2) {
+                } else if(win == 0) {
                     System.out.println("\n----------------------------------\n");
                     System.out.println("Egalité !");
                     System.out.println("\n----------------------------------\n");
+                } else if(win == 2) {
+                    System.out.println("\n----------------------------------\n");
+                    System.out.println("Le plateau est plein !");
+                    System.out.println("Le joueur ayant le moins de points gagne la manche !");
+                    Player minPlayer = this.players.get(0);
+                    for (Player player : players) {
+                        
+                        if (player.getScore() < minPlayer.getScore()) {
+                            minPlayer = player;
+                        }
+                    }
+                    // on vérifie si il y a égalité
+                    int nbMinPlayer = 0;
+                    for (Player player : players) {
+                        
+                        if (player.getScore() == minPlayer.getScore()) {
+                            nbMinPlayer++;
+                        }
+                    }
+                    if (nbMinPlayer > 1) {
+                        System.out.println("Egalité !");
+                    } else {
+                       minPlayer.addRound();
+                       this.updateRound();  
+                    }
                 } else {
                     this.currentPlayer.addRound();
                     this.updateRound();   
@@ -208,6 +233,9 @@ public class Game {
     public void startRound() {
 
         this.board = new Board();
+        for(Player player : this.players) {
+            player.resetScore();
+        }
         this.addRound();
         startDistribution();
         Player randomPlayer = pickRandomPlayer();
@@ -234,7 +262,8 @@ public class Game {
      * This method is used to play a card.
      */
     public void play() {
-       System.out.println("\n----------------------------------\n");
+
+        System.out.println("\n----------------------------------\n");
         System.out.println("Joueur " + currentPlayer.getName() + " a vous de jouer :");
         
         Card cardChoose = this.currentPlayer.randomCard();

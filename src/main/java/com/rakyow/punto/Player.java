@@ -49,6 +49,7 @@ public class Player {
             int random = (int) (Math.random() * this.cards.size());
             card = this.cards.get(random);
             this.cards.remove(random);
+            this.score += card.getValue();
         }
         return card;
     }
@@ -80,6 +81,10 @@ public class Player {
      */
     public int getScore() {
         return this.score;
+    }
+
+    public void resetScore() {
+        this.score = 0;
     }
 
     /**
