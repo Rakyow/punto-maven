@@ -44,6 +44,12 @@
         <version>8.0.26</version> <!-- Version la plus récente du pilote MySQL -->
     </dependency>
 
+    <dependency>
+        <groupId>org.neo4j.driver</groupId>
+        <artifactId>neo4j-java-driver</artifactId>
+        <version>4.3.7</version> <!-- Assurez-vous d'utiliser la version appropriée -->
+    </dependency>
+
   </dependencies>
 
   <build>

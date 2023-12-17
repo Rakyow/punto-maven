@@ -217,4 +217,16 @@ public class ConnexionSQLite {
         }
     }
 
+    public void dropTable() {
+        try {
+            Statement statement = connexion.createStatement();
+            statement.executeUpdate("DROP TABLE IF EXISTS Game");
+            statement.executeUpdate("DROP TABLE IF EXISTS Round");
+            statement.executeUpdate("DROP TABLE IF EXISTS Play");
+            statement.executeUpdate("DROP TABLE IF EXISTS Player");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -1,8 +1,8 @@
 com\rakyow\punto\Game.class
 com\rakyow\database\ConnexionMongoDB.class
-com\rakyow\gameLauncher.class
 com\rakyow\punto\Card.class
 com\rakyow\database\ConnexionMySQL.class
+com\rakyow\GameLauncher.class
 com\rakyow\punto\Board.class
 com\rakyow\App.class
 com\rakyow\punto\Color.class

@@ -271,4 +271,23 @@ public class ConnexionMySQL {
             return false;
         }
     }
+
+    public void dropTable() {
+        try {
+            Statement statement = connection.createStatement();
+
+            String dropGameTable = "DROP TABLE IF EXISTS Game";
+            String dropRoundTable = "DROP TABLE IF EXISTS Round";
+            String dropPlayTable = "DROP TABLE IF EXISTS Play";
+            String dropPlayerTable = "DROP TABLE IF EXISTS Player";
+
+            statement.executeUpdate(dropGameTable);
+            statement.executeUpdate(dropRoundTable);
+            statement.executeUpdate(dropPlayTable);
+            statement.executeUpdate(dropPlayerTable);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

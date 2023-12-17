@@ -298,7 +298,7 @@ public class Game {
                 if (pos >= 0 && pos < 11) {
                     break; 
                 } else {
-                    System.out.println("Veuillez entrer un entier entre 0 et 9 :");
+                    System.out.println("Veuillez entrer un entier entre 0 et 10 (compris) :");
                 }
             } else {
                 System.out.println("Veuillez entrer un entier valide :");

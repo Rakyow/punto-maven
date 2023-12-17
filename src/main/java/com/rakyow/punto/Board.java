@@ -36,31 +36,55 @@ public class Board {
      * This method is used to print the board.
      */
     public void printBoardWithTab() {
-        
         String[][] stringBoard = new String[BOARD_SIZE][BOARD_SIZE];
-
+    
+        // Remplissage du tableau de chaînes de caractères
         for (int x = 0; x < BOARD_SIZE; x++) {
-            for (int y = 0; y < BOARD_SIZE; y++){
+            for (int y = 0; y < BOARD_SIZE; y++) {
                 if (this.board[y][x] == null) {
-                    if(this.isPlayable(y, x)) {
-                        stringBoard[y][x] = "O ";
-                    } else {
-                        stringBoard[y][x] = "X ";
-                    }
+                    stringBoard[y][x] = this.isPlayable(y, x) ? "○" : "×";
                 } else {
                     stringBoard[y][x] = board[y][x].printCard();
                 }
             }
         }
-
+    
+        // Affichage du plateau de jeu
         for (int x = 0; x < BOARD_SIZE; x++) {
-            System.out.println("------------------------------------------------------------------");
-            for (int y = 0; y < BOARD_SIZE; y++){
-                System.out.print("| " + stringBoard[x][y] + " ");
+            printHorizontalLine();
+            printRowBorder();
+            for (int y = 0; y < BOARD_SIZE; y++) {
+                System.out.print("║ " + formatSymbol(stringBoard[x][y]) + " ");
             }
-            System.out.println("|");
+            System.out.println("║");
+            printRowBorder();
         }
+        printHorizontalLine();
     }
+    
+    // Méthode pour afficher une ligne horizontale de séparation
+    private void printHorizontalLine() {
+        System.out.print("╔");
+        for (int i = 0; i < BOARD_SIZE * 4; i++) {
+            System.out.print("═");
+        }
+        System.out.println("╗");
+    }
+    
+    // Méthode pour afficher la bordure de chaque ligne
+    private void printRowBorder() {
+        System.out.print("║");
+    }
+    
+    // Méthode pour formater les symboles visuels
+    private String formatSymbol(String symbol) {
+        return switch (symbol) {
+            case "○" -> "\u001B[37m" + symbol + "\u001B[0m"; // Bleu pour les espaces jouables
+            case "×" -> "\u001B[30m" + symbol + "\u001B[0m";// Noir pour les espaces non jouables
+            default -> symbol;
+        };
+    }
+    
 
     /**
      * This method is used to print the board.

@@ -183,4 +183,19 @@ public class ConnexionMongoDB {
             return false;
         }
     }
+
+    public void dropTable() {
+        try {
+            MongoCollection<Document> collection = database.getCollection("Game");
+            collection.drop();
+            collection = database.getCollection("Round");
+            collection.drop();
+            collection = database.getCollection("Play");
+            collection.drop();
+            collection = database.getCollection("Player");
+            collection.drop();
+        } catch (MongoException e) {
+            System.err.println("MongoDB : Erreur lors de la suppression des tables : " + e.getMessage());
+        }
+    }
 }
